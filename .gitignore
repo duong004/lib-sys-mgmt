@@ -1,0 +1,22 @@
+# Ignore compiled Java class files
+*.class
+
+# Ignore IntelliJ IDEA project files
+*.iml
+.idea/
+
+# Ignore Eclipse project files
+.project
+.classpath
+.settings/
+
+# Ignore NetBeans project files
+nbproject/
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore build directories
+/out/
+/build/
+/target/
