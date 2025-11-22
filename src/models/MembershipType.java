@@ -1,3 +1,5 @@
+package models;
+
 enum MembershipType {
     STANDARD(3, 0.0),
     PREMIUM(10, 0.15),

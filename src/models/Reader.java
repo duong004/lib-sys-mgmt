@@ -1,3 +1,7 @@
+package models;
+
+import java.time.LocalDate;
+
 class Reader extends Person {
     private String readerId;
     private MembershipType membershipType;

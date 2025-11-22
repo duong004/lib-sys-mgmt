@@ -1,3 +1,5 @@
+package models;
+
 class ReferenceBook extends Book {
     private String topic;
     private boolean canBorrow;

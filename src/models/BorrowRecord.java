@@ -1,3 +1,8 @@
+package models;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 class BorrowRecord {
     private String recordId;
     private Reader reader;

@@ -1,3 +1,5 @@
+package models;
+
 abstract class Book {
     protected String ISBN;
     protected String title;

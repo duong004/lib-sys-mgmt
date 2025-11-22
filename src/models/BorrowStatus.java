@@ -1,3 +1,5 @@
+package models;
+
 enum BorrowStatus {
     BORROWED("Đang mượn"),
     RETURNED("Đã trả"),
