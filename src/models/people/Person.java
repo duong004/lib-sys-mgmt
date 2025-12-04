@@ -1,7 +1,7 @@
-package models;
+package models.people;
 import java.time.LocalDate;
 
-abstract class Person {
+public abstract class Person {
     protected String id;
     protected String name;
     protected String email;

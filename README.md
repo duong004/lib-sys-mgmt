@@ -1,7 +1,7 @@
-# Library Management System
+# MVP.Library Management System
 
 ## 1. Giới thiệu
-**Library Management System** là một ứng dụng mô phỏng hệ thống quản lý thư viện.  
+**MVP.Library Management System** là một ứng dụng mô phỏng hệ thống quản lý thư viện.  
 Sản phẩm giúp quản lý sách, độc giả và hoạt động mượn/trả một cách đơn giản, trực quan.  
 Đây là đề tài mang tính thực tế, dễ hiểu, phù hợp cho việc học tập và thực hành lập trình hướng đối tượng.
 
@@ -103,7 +103,7 @@ Sản phẩm giúp quản lý sách, độc giả và hoạt động mượn/tr�
 ---
 
 ## 6. Kết luận
-Library Management System là một sản phẩm nhỏ gọn nhưng hữu ích, vừa mang tính thực tế về quản lý thư viện.
+MVP.Library Management System là một sản phẩm nhỏ gọn nhưng hữu ích, vừa mang tính thực tế về quản lý thư viện.
 
 ---
 

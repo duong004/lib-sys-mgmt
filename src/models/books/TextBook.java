@@ -1,6 +1,6 @@
-package models;
+package models.books;
 
-class TextBook extends Book {
+public class TextBook extends Book {
     private String subject;
     private int grade;
     private int edition;

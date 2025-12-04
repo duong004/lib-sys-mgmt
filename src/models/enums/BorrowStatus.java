@@ -1,6 +1,6 @@
-package models;
+package models.enums;
 
-enum BorrowStatus {
+public enum BorrowStatus {
     BORROWED("Đang mượn"),
     RETURNED("Đã trả"),
     OVERDUE("Quá hạn"),

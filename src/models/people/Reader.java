@@ -1,8 +1,10 @@
-package models;
+package models.people;
+
+import models.enums.MembershipType;
 
 import java.time.LocalDate;
 
-class Reader extends Person {
+public class Reader extends Person {
     private String readerId;
     private MembershipType membershipType;
     private LocalDate registrationDate;
@@ -50,4 +52,6 @@ class Reader extends Person {
     public int getCurrentBorrows() { return currentBorrows; }
     public int getTotalBorrowed() { return totalBorrowed; }
     public void setMembershipType(MembershipType type) { this.membershipType = type; }
+    public LocalDate getRegistrationDate() { return registrationDate; }
+    public boolean isActive() { return isActive; }
 }

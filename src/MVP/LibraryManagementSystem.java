@@ -1,11 +1,11 @@
-// MVP
+package MVP;// MVP
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 // ENUMERATIONS
-// MembershipType.java
+// MVP.MembershipType.java
 enum MembershipType {
     STANDARD(3, 0.0),
     PREMIUM(10, 0.15),
@@ -29,7 +29,7 @@ enum MembershipType {
     }
 }
 
-// BorrowStatus.java
+// MVP.BorrowStatus.java
 enum BorrowStatus {
     BORROWED("Đang mượn"),
     RETURNED("Đã trả"),
@@ -49,7 +49,7 @@ enum BorrowStatus {
 
 // INTERFACES
 
-// Searchable.java
+// MVP.Searchable.java
 interface Searchable {
     List<Book> searchByTitle(String title);
     List<Book> searchByAuthor(String author);
@@ -57,7 +57,7 @@ interface Searchable {
     List<Book> searchByCategory(String category);
 }
 
-// Reportable.java
+// MVP.Reportable.java
 interface Reportable {
     void generatePopularBooksReport();
     void generateActiveReadersReport();
@@ -67,7 +67,7 @@ interface Reportable {
 
 // ABSTRACT CLASSES
 
-// Person.java
+// MVP.Person.java
 abstract class Person {
     protected String id;
     protected String name;
@@ -104,7 +104,7 @@ abstract class Person {
     public void setAddress(String address) { this.address = address; }
 }
 
-// Book.java
+// MVP.Book.java
 abstract class Book {
     protected String ISBN;
     protected String title;
@@ -166,7 +166,7 @@ abstract class Book {
 }
 
 // CLASSES - BOOKS
-// TextBook.java
+// MVP.TextBook.java
 class TextBook extends Book {
     private String subject;
     private int grade;
@@ -191,7 +191,7 @@ class TextBook extends Book {
     public int getGrade() { return grade; }
 }
 
-// ReferenceBook.java
+// MVP.ReferenceBook.java
 class ReferenceBook extends Book {
     private String topic;
     private boolean canBorrow;
@@ -216,7 +216,7 @@ class ReferenceBook extends Book {
     public void setCanBorrow(boolean canBorrow) { this.canBorrow = canBorrow; }
 }
 
-// Magazine.java
+// MVP.Magazine.java
 class Magazine extends Book {
     private int issueNumber;
     private LocalDate publishDate;
@@ -244,7 +244,7 @@ class Magazine extends Book {
 }
 
 // CLASSES - PERSONS
-// Reader.java
+// MVP.Reader.java
 class Reader extends Person {
     private String readerId;
     private MembershipType membershipType;
@@ -295,7 +295,7 @@ class Reader extends Person {
     public void setMembershipType(MembershipType type) { this.membershipType = type; }
 }
 
-// Librarian.java
+// MVP.Librarian.java
 class Librarian extends Person {
     private String employeeId;
     private String position;
@@ -332,7 +332,7 @@ class Librarian extends Person {
 }
 
 // BORROW RECORD
-// BorrowRecord.java
+// MVP.BorrowRecord.java
 class BorrowRecord {
     private String recordId;
     private Reader reader;
@@ -415,7 +415,7 @@ class BorrowRecord {
 }
 
 // LIBRARY CLASS
-// Library.java
+// MVP.Library.java
 class Library implements Searchable, Reportable {
     private String libraryName;
     private String address;

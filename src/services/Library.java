@@ -1,11 +1,18 @@
-package models;
+package services;
+
+import interfaces.Reportable;
+import interfaces.Searchable;
+import models.BorrowRecord;
+import models.enums.BorrowStatus;
+import models.people.*;
+import models.books.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class Library implements Searchable, Reportable {
+public class Library implements Searchable, Reportable {
     private String libraryName;
     private String address;
     private List<Book> books;
@@ -34,7 +41,7 @@ class Library implements Searchable, Reportable {
 
     public boolean removeBook(String ISBN) {
         Book book = searchByISBN(ISBN);
-        if (book != null && book.getAvailableCopies() == book.totalCopies) {
+        if (book != null && book.getAvailableCopies() == book.getTotalCopies()) {
             books.remove(book);
             System.out.println(" Đã xóa sách: " + book.getTitle());
             return true;
@@ -296,4 +303,10 @@ class Library implements Searchable, Reportable {
         System.out.println("Đang được mượn: " + borrowing);
         System.out.println("Sách quá hạn: " + getOverdueRecords().size());
     }
+
+    // Getters
+    public String getLibraryName() { return libraryName; }
+    public List<Book> getBooks() { return books; }
+    public List<Reader> getReaders() { return readers; }
+    public List<BorrowRecord> getBorrowRecords() { return borrowRecords; }
 }

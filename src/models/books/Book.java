@@ -1,6 +1,6 @@
-package models;
+package models.books;
 
-abstract class Book {
+public abstract class Book {
     protected String ISBN;
     protected String title;
     protected String author;
@@ -48,14 +48,18 @@ abstract class Book {
         return daysLate * 5000; // 5000 VND per day
     }
 
-    // Getters
+    // Getters and Setters
     public String getISBN() { return ISBN; }
     public String getTitle() { return title; }
     public String getAuthor() { return author; }
     public String getCategory() { return category; }
     public int getAvailableCopies() { return availableCopies; }
+    public int getTotalCopies() { return totalCopies; }
     public void setCategory(String category) { this.category = category; }
     public void setPublisher(String publisher) { this.publisher = publisher; }
     public void setPublishYear(int year) { this.publishYear = year; }
     public void setPrice(double price) { this.price = price; }
+    public String getPublisher() { return publisher; }
+    public int getPublishYear() { return publishYear; }
+    public double getPrice() { return price; }
 }

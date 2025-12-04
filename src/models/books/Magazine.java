@@ -1,8 +1,8 @@
-package models;
+package models.books;
 
 import java.time.LocalDate;
 
-class Magazine extends Book {
+public class Magazine extends Book {
     private int issueNumber;
     private LocalDate publishDate;
     private String frequency;
@@ -26,4 +26,5 @@ class Magazine extends Book {
     public boolean isLatestIssue() {
         return publishDate.isAfter(LocalDate.now().minusMonths(1));
     }
+    public LocalDate getPublishDate() { return publishDate; }
 }

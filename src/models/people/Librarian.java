@@ -1,10 +1,10 @@
-package models;
+package models.people;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-class Librarian extends Person {
+public class Librarian extends Person {
     private String employeeId;
     private String position;
     private LocalDate hireDate;
@@ -37,4 +37,8 @@ class Librarian extends Person {
     public boolean hasPermission(String action) {
         return permissions.contains(action);
     }
+
+    // Getters
+    public String getEmployeeId() { return employeeId; }
+    public String getPosition() { return position; }
 }

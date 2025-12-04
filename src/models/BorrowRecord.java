@@ -1,9 +1,13 @@
 package models;
 
+import models.books.Book;
+import models.enums.BorrowStatus;
+import models.people.Reader;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-class BorrowRecord {
+public class BorrowRecord {
     private String recordId;
     private Reader reader;
     private Book book;
@@ -82,4 +86,7 @@ class BorrowRecord {
     public BorrowStatus getStatus() { return status; }
     public double getFine() { return fine; }
     public LocalDate getDueDate() { return dueDate; }
+    public LocalDate getBorrowDate() { return borrowDate; }
+    public LocalDate getReturnDate() { return returnDate; }
+    public int getRenewalCount() { return renewalCount; }
 }

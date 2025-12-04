@@ -1,6 +1,6 @@
-package models;
+package models.books;
 
-class ReferenceBook extends Book {
+public class ReferenceBook extends Book {
     private String topic;
     private boolean canBorrow;
     private String referenceNumber;
@@ -22,4 +22,5 @@ class ReferenceBook extends Book {
 
     public boolean canBeBorrowed() { return canBorrow; }
     public void setCanBorrow(boolean canBorrow) { this.canBorrow = canBorrow; }
+    public String getTopic() { return topic; }
 }
