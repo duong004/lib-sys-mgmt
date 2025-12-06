@@ -186,6 +186,9 @@ cache/
 package-lock.json
 yarn.lock
 
+# Database config with password
+src/database/config/config.properties
+
 # ==================== KEEP THESE ====================
 
 # Keep empty directories with .gitkeep
