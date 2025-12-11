@@ -54,4 +54,8 @@ public class Reader extends Person {
     public void setMembershipType(MembershipType type) { this.membershipType = type; }
     public LocalDate getRegistrationDate() { return registrationDate; }
     public boolean isActive() { return isActive; }
+    public void setRegistrationDate(LocalDate date) { this.registrationDate = date; }
+    public void setCurrentBorrows(int currentBorrows) { this.currentBorrows = currentBorrows; }
+    public void setTotalBorrowed(int totalBorrowed) { this.totalBorrowed = totalBorrowed; }
+    public void setActive(boolean active) { this.isActive = active; }
 }

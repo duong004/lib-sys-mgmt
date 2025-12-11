@@ -89,4 +89,12 @@ public class BorrowRecord {
     public LocalDate getBorrowDate() { return borrowDate; }
     public LocalDate getReturnDate() { return returnDate; }
     public int getRenewalCount() { return renewalCount; }
+    public void setRecordId(String recordId) { this.recordId = recordId; }
+    public void setStatus(BorrowStatus status) { this.status = status; }
+    public void setFine(double fine) { this.fine = fine; }
+    public void setBorrowDate(LocalDate borrowDate) { this.borrowDate = borrowDate; }
+    public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
+    public void setReturnDate(LocalDate returnDate) { this.returnDate = returnDate; }
+    public void setRenewalCount(int renewalCount) { this.renewalCount = renewalCount; }
+
 }
