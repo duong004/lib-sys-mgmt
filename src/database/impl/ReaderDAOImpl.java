@@ -13,9 +13,15 @@ public class ReaderDAOImpl implements ReaderDAO {
 
     @Override
     public void save(Reader reader) throws SQLException {
+        // Generate reader ID if not set
+        if (reader.getId() == null || reader.getId().isEmpty()) {
+            String newId = generateNextReaderId();
+            reader.setReaderId(newId);
+        }
+
         String sql = "INSERT INTO readers (reader_id, name, email, phone, address, " +
-                "membership_type, registration_date, current_borrows, total_borrowed, is_active) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "membership_type, registration_date, current_borrows, total_borrowed, is_active, status) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -30,6 +36,7 @@ public class ReaderDAOImpl implements ReaderDAO {
             pstmt.setInt(8, reader.getCurrentBorrows());
             pstmt.setInt(9, reader.getTotalBorrowed());
             pstmt.setBoolean(10, reader.isActive());
+            pstmt.setString(11, reader.getStatus() != null ? reader.getStatus() : "ACTIVE");
 
             pstmt.executeUpdate();
 
@@ -41,7 +48,7 @@ public class ReaderDAOImpl implements ReaderDAO {
     @Override
     public void update(Reader reader) throws SQLException {
         String sql = "UPDATE readers SET name = ?, email = ?, phone = ?, address = ?, " +
-                "membership_type = ?, current_borrows = ?, total_borrowed = ?, is_active = ? " +
+                "membership_type = ?, current_borrows = ?, total_borrowed = ?, is_active = ?, status = ? " +
                 "WHERE reader_id = ?";
 
         try (Connection conn = DatabaseConfig.getConnection();
@@ -55,7 +62,8 @@ public class ReaderDAOImpl implements ReaderDAO {
             pstmt.setInt(6, reader.getCurrentBorrows());
             pstmt.setInt(7, reader.getTotalBorrowed());
             pstmt.setBoolean(8, reader.isActive());
-            pstmt.setString(9, reader.getId());
+            pstmt.setString(9, reader.getStatus());
+            pstmt.setString(10, reader.getId());
 
             pstmt.executeUpdate();
 
@@ -66,7 +74,8 @@ public class ReaderDAOImpl implements ReaderDAO {
 
     @Override
     public boolean delete(String readerId) throws SQLException {
-        String sql = "DELETE FROM readers WHERE reader_id = ?";
+        // Soft delete - set status to INACTIVE instead of deleting
+        String sql = "UPDATE readers SET status = 'INACTIVE', is_active = false WHERE reader_id = ?";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -102,7 +111,8 @@ public class ReaderDAOImpl implements ReaderDAO {
 
     @Override
     public List<Reader> findAll() throws SQLException {
-        String sql = "SELECT * FROM readers ORDER BY name";
+        // Only return active readers by default
+        String sql = "SELECT * FROM readers WHERE status = 'ACTIVE' ORDER BY name";
         List<Reader> readers = new ArrayList<>();
 
         try (Connection conn = DatabaseConfig.getConnection();
@@ -122,7 +132,7 @@ public class ReaderDAOImpl implements ReaderDAO {
 
     @Override
     public List<Reader> findByMembershipType(String membershipType) throws SQLException {
-        String sql = "SELECT * FROM readers WHERE membership_type = ? ORDER BY name";
+        String sql = "SELECT * FROM readers WHERE membership_type = ? AND status = 'ACTIVE' ORDER BY name";
         List<Reader> readers = new ArrayList<>();
 
         try (Connection conn = DatabaseConfig.getConnection();
@@ -183,7 +193,7 @@ public class ReaderDAOImpl implements ReaderDAO {
 
     @Override
     public int getActiveCount() throws SQLException {
-        String sql = "SELECT COUNT(*) FROM readers WHERE is_active = true";
+        String sql = "SELECT COUNT(*) FROM readers WHERE status = 'ACTIVE'";
 
         try (Connection conn = DatabaseConfig.getConnection();
              Statement stmt = conn.createStatement();
@@ -201,6 +211,37 @@ public class ReaderDAOImpl implements ReaderDAO {
 
     // ========== HELPER METHODS ==========
 
+    /**
+     * Generate next reader ID in format R#### (minimum 4 characters)
+     * Examples: R0001, R0002, ... R0999, R1000, R1500, etc.
+     */
+    private String generateNextReaderId() throws SQLException {
+        String sql = "SELECT reader_id FROM readers WHERE reader_id LIKE 'R%' ORDER BY reader_id DESC LIMIT 1";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            if (rs.next()) {
+                String lastId = rs.getString("reader_id");
+                // Extract number from R####
+                int lastNumber = Integer.parseInt(lastId.substring(1));
+                int nextNumber = lastNumber + 1;
+                // Format with at least 3 digits (R001, R002, etc.)
+                return String.format("R%03d", nextNumber);
+            } else {
+                // First reader
+                return "R001";
+            }
+
+        } catch (SQLException e) {
+            throw new SQLException("Error generating reader ID: " + e.getMessage(), e);
+        } catch (NumberFormatException e) {
+            // If parsing fails, start from R001
+            return "R001";
+        }
+    }
+
     private Reader mapResultSetToReader(ResultSet rs) throws SQLException {
         String id = rs.getString("reader_id");
         String name = rs.getString("name");
@@ -215,6 +256,10 @@ public class ReaderDAOImpl implements ReaderDAO {
         reader.setCurrentBorrows(rs.getInt("current_borrows"));
         reader.setTotalBorrowed(rs.getInt("total_borrowed"));
         reader.setActive(rs.getBoolean("is_active"));
+
+        // Set status (use ACTIVE as default if null for backward compatibility)
+        String status = rs.getString("status");
+        reader.setStatus(status != null ? status : "ACTIVE");
 
         return reader;
     }

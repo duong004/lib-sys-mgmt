@@ -2,10 +2,7 @@ package database.impl;
 
 import database.config.DatabaseConfig;
 import database.dao.BookDAO;
-import models.books.Book;
-import models.books.Magazine;
-import models.books.ReferenceBook;
-import models.books.TextBook;
+import models.books.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -192,10 +189,12 @@ public class BookDAOImpl implements BookDAO {
         String title = rs.getString("title");
         String author = rs.getString("author");
         int totalCopies = rs.getInt("total_copies");
+        int availableCopies = rs.getInt("available_copies");
 
-        Book book;
+        Book book = null;
         String extraInfo = rs.getString("extra_info");
 
+        // Create appropriate book type
         switch (bookType) {
             case "TextBook":
                 String subject = extractFromJSON(extraInfo, "subject");
@@ -222,11 +221,10 @@ public class BookDAOImpl implements BookDAO {
         book.setPublishYear(rs.getInt("publish_year"));
         book.setPrice(rs.getDouble("price"));
 
-        // Set available copies directly (package access needed or use reflection)
-        int availableCopies = rs.getInt("available_copies");
-        // Adjust available copies by borrowing/returning
-        int diff = totalCopies - availableCopies;
-        for (int i = 0; i < diff; i++) {
+        // CRITICAL FIX: Set available copies correctly
+        // Calculate how many times to call borrowBook() to match DB state
+        int borrowed = totalCopies - availableCopies;
+        for (int i = 0; i < borrowed; i++) {
             book.borrowBook();
         }
 
@@ -244,11 +242,11 @@ public class BookDAOImpl implements BookDAO {
         if (book instanceof TextBook) {
             TextBook tb = (TextBook) book;
             return String.format("{\"subject\":\"%s\",\"grade\":%d}",
-                    tb.getSubject(), tb.getGrade());
+                    escapeJson(tb.getSubject()), tb.getGrade());
         } else if (book instanceof ReferenceBook) {
             ReferenceBook rb = (ReferenceBook) book;
             return String.format("{\"topic\":\"%s\",\"canBorrow\":%b}",
-                    rb.getTopic(), rb.canBeBorrowed());
+                    escapeJson(rb.getTopic()), rb.canBeBorrowed());
         } else if (book instanceof Magazine) {
             Magazine m = (Magazine) book;
             return String.format("{\"issueNumber\":%d}", m.getIssueNumber());
@@ -257,13 +255,21 @@ public class BookDAOImpl implements BookDAO {
     }
 
     private String extractFromJSON(String json, String key) {
-        if (json == null) return "";
-        String pattern = "\"" + key + "\":\"?([^,}\"]+)\"?";
+        if (json == null || json.isEmpty()) return "";
+
+        // Handle both quoted and unquoted values
+        String pattern = "\"" + key + "\"\\s*:\\s*\"?([^,}\"]+)\"?";
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(pattern);
         java.util.regex.Matcher m = p.matcher(json);
+
         if (m.find()) {
-            return m.group(1);
+            return m.group(1).trim();
         }
         return "";
+    }
+
+    private String escapeJson(String value) {
+        if (value == null) return "";
+        return value.replace("\"", "\\\"").replace("\n", "\\n");
     }
 }
