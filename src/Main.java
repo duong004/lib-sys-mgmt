@@ -83,7 +83,8 @@ public class Main {
             System.out.println("2.  Xóa sách");
             System.out.println("3.  Tìm kiếm sách");
             System.out.println("4.  Hiển thị tất cả sách");
-            System.out.println("5.  Quay lại");
+            System.out.println("5.  Xem lịch sử nhập sách");
+            System.out.println("6.  Quay lại");
             System.out.println("────────────────────────────────────────");
 
             int choice = getIntInput("Chọn: ");
@@ -93,7 +94,8 @@ public class Main {
                 case 2: removeBook(); break;
                 case 3: searchBook(); break;
                 case 4: library.displayAllBooks(); break;
-                case 5: return;
+                case 5: viewInventoryLogs(); break;
+                case 6: return;
                 default: System.out.println(" Lựa chọn không hợp lệ!");
             }
         }
@@ -103,6 +105,32 @@ public class Main {
         System.out.println("\n═══════════════════════════════════════");
         System.out.println("               THÊM SÁCH MỚI");
         System.out.println("═══════════════════════════════════════");
+        System.out.println("Bước 1: Kiểm tra ISBN\n");
+
+        String isbn = getStringInput("ISBN: ");
+        int quantity = getIntInput("Số lượng cần thêm: ");
+
+        if (quantity <= 0) {
+            System.out.println(" Số lượng phải lớn hơn 0!");
+            return;
+        }
+
+        // Try to update existing book
+        System.out.println("\n Đang kiểm tra ISBN trong hệ thống...");
+        Book existingBook = library.addOrUpdateBookInventory(isbn, quantity, "LIBRARIAN_001");
+
+        if (existingBook != null) {
+            // Book exists - quantity updated successfully
+            System.out.println(" Cập nhật thành công!");
+            existingBook.displayDetails();
+            return;
+        }
+
+        // ISBN doesn't exist - need full information
+        System.out.println("\n ISBN chưa tồn tại trong hệ thống.");
+        System.out.println("Vui lòng nhập thông tin sách:\n");
+
+        // Get book type
         System.out.println("Loại sách:");
         System.out.println("1.  Sách giáo khoa");
         System.out.println("2.  Sách tham khảo");
@@ -110,23 +138,9 @@ public class Main {
 
         int type = getIntInput("Chọn loại: ");
 
-        String isbn = getStringInput("ISBN: ");
-
-        // Check if ISBN already exists
-        Book existingBook = library.searchByISBN(isbn);
-        if (existingBook != null) {
-            System.out.println(" ISBN này đã tồn tại trong hệ thống!");
-            return;
-        }
-
+        // Basic info
         String title = getStringInput("Tên sách: ");
         String author = getStringInput("Tác giả: ");
-        int copies = getIntInput("Số lượng: ");
-
-        if (copies <= 0) {
-            System.out.println(" Số lượng phải lớn hơn 0!");
-            return;
-        }
 
         Book book = null;
 
@@ -134,22 +148,23 @@ public class Main {
             case 1:
                 String subject = getStringInput("Môn học: ");
                 int grade = getIntInput("Lớp: ");
-                book = new TextBook(isbn, title, author, copies, subject, grade);
+                book = new TextBook(isbn, title, author, quantity, subject, grade);
                 break;
             case 2:
                 String topic = getStringInput("Chủ đề: ");
-                book = new ReferenceBook(isbn, title, author, copies, topic);
+                book = new ReferenceBook(isbn, title, author, quantity, topic);
                 break;
             case 3:
                 int issueNumber = getIntInput("Số phát hành: ");
-                book = new Magazine(isbn, title, author, copies, issueNumber);
+                book = new Magazine(isbn, title, author, quantity, issueNumber);
                 break;
             default:
                 System.out.println(" Loại sách không hợp lệ!");
                 return;
         }
 
-        // Set additional info
+        // Optional info
+        System.out.println("\n--- Thông tin bổ sung (có thể bỏ qua) ---");
         String publisher = getStringInput("Nhà xuất bản (Enter để bỏ qua): ");
         if (!publisher.isEmpty()) {
             book.setPublisher(publisher);
@@ -166,6 +181,11 @@ public class Main {
         }
 
         library.addBook(book);
+        // Save new book
+        library.addBook(book);
+        library.addBook(book, "LIBRARIAN_001");
+        System.out.println("\n Đã thêm sách mới với ISBN: " + isbn);
+        book.displayDetails();
     }
 
     private static void removeBook() {
@@ -224,6 +244,52 @@ public class Main {
         System.out.println("═══════════════════════════════════════");
         for (Book book : results) {
             System.out.println(book.getInfo());
+        }
+    }
+
+    private static void viewInventoryLogs() {
+        System.out.println("\n═════════════════════════════");
+        System.out.println("      LỊCH SỬ NHẬP SÁCH");
+        System.out.println("═════════════════════════════");
+        System.out.println("1. Xem tất cả lịch sử");
+        System.out.println("2. Xem theo ISBN");
+        System.out.println("3. Xem 20 lần nhập gần nhất");
+
+        int choice = getIntInput("Chọn: ");
+
+        try {
+            database.dao.BookInventoryLogDAO logDAO = new database.impl.BookInventoryLogDAOImpl();
+            java.util.List<models.BookInventoryLog> logs = null;
+
+            switch (choice) {
+                case 1:
+                    logs = logDAO.findAll();
+                    break;
+                case 2:
+                    String isbn = getStringInput("Nhập ISBN: ");
+                    logs = logDAO.findByISBN(isbn);
+                    break;
+                case 3:
+                    logs = logDAO.findRecent(20);
+                    break;
+                default:
+                    System.out.println(" Lựa chọn không hợp lệ!");
+                    return;
+            }
+
+            if (logs == null || logs.isEmpty()) {
+                System.out.println(" Không có lịch sử nào.");
+                return;
+            }
+
+            System.out.println("\n Tìm thấy " + logs.size() + " bản ghi:");
+            System.out.println("═══════════════════════════════════════");
+            for (models.BookInventoryLog log : logs) {
+                System.out.println(log.getInfo());
+            }
+
+        } catch (java.sql.SQLException e) {
+            System.err.println(" Lỗi khi xem lịch sử: " + e.getMessage());
         }
     }
 
@@ -295,6 +361,7 @@ public class Main {
         }
 
         library.registerReader(reader);
+        System.out.println(" Mã độc giả của bạn là: " + reader.getId());
     }
 
     private static void removeReader() {

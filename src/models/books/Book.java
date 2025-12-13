@@ -62,4 +62,6 @@ public abstract class Book {
     public String getPublisher() { return publisher; }
     public int getPublishYear() { return publishYear; }
     public double getPrice() { return price; }
+    public void setTotalCopies(int totalCopies) { this.totalCopies = totalCopies; }
+    public void setAvailableCopies(int availableCopies) { this.availableCopies = availableCopies; }
 }

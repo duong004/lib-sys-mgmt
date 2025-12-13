@@ -2,10 +2,12 @@ package database.impl;
 
 import database.config.DatabaseConfig;
 import database.dao.BookDAO;
+import database.dao.BookInventoryLogDAO;
 import database.dao.BorrowRecordDAO;
 import database.dao.ReaderDAO;
 import interfaces.Reportable;
 import interfaces.Searchable;
+import models.BookInventoryLog;
 import models.BorrowRecord;
 import models.books.Book;
 import models.enums.BorrowStatus;
@@ -39,12 +41,76 @@ public class LibraryService implements Searchable, Reportable {
 
     // ========== BOOK MANAGEMENT ==========
 
+    public Book addOrUpdateBookInventory(String isbn, int quantityToAdd, String performedBy) {
+        try {
+            Book existingBook = bookDAO.findByISBN(isbn);
+
+            if (existingBook != null) {
+                // ISBN exists - UPDATE quantity
+                int oldTotal = existingBook.getTotalCopies();
+                int oldAvailable = existingBook.getAvailableCopies();
+                int newTotal = oldTotal + quantityToAdd;
+                int newAvailable = oldAvailable + quantityToAdd;
+
+                existingBook.setTotalCopies(newTotal);
+                existingBook.setAvailableCopies(newAvailable);
+
+                // Update both total and available copies
+//                for (int i = 0; i < quantityToAdd; i++) {
+//                    existingBook.returnBook(); // Increases available copies
+//                }
+
+                // Save to database
+                bookDAO.update(existingBook);
+
+                // Log the change
+                logInventoryChange(isbn, quantityToAdd, newTotal, "INCREASE_STOCK",
+                        performedBy, "Nhập thêm sách vào kho");
+
+                System.out.println(" Đã cập nhật số lượng cho ISBN: " + isbn);
+                System.out.println(" Số lượng cũ: " + oldTotal);
+                System.out.println(" Số lượng mới: " + newTotal);
+
+                return existingBook;
+
+            } else {
+                // ISBN doesn't exist - return null to signal need for full info
+                return null;
+            }
+
+        } catch (SQLException e) {
+            System.err.println(" Lỗi khi xử lý sách: " + e.getMessage());
+            return null;
+        }
+    }
+
     public void addBook(Book book) {
+        addBook(book, "SYSTEM");
+    }
+
+    public void addBook(Book book, String performedBy) {
         try {
             bookDAO.save(book);
-            System.out.println(" Đã thêm sách: " + book.getTitle());
+
+            // Log the addition
+            logInventoryChange(book.getISBN(), book.getTotalCopies(), book.getTotalCopies(),
+                    "ADD_NEW", performedBy, "Thêm sách mới: " + book.getTitle());
+
+            System.out.println(" Đã thêm sách mới: " + book.getTitle());
         } catch (SQLException e) {
             System.err.println(" Lỗi khi thêm sách: " + e.getMessage());
+        }
+    }
+
+    private void logInventoryChange(String isbn, int quantityChange, int totalAfter,
+                                    String actionType, String performedBy, String notes) {
+        try {
+            BookInventoryLogDAO logDAO = new BookInventoryLogDAOImpl();
+            BookInventoryLog log = new BookInventoryLog(isbn, quantityChange, totalAfter,
+                    actionType, performedBy, notes);
+            logDAO.save(log);
+        } catch (SQLException e) {
+            System.err.println("  Không thể ghi log: " + e.getMessage());
         }
     }
 
