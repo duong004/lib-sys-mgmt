@@ -1,17 +1,16 @@
 package database.impl;
 
 import database.config.DatabaseConfig;
-import database.dao.BookDAO;
-import database.dao.BookInventoryLogDAO;
-import database.dao.BorrowRecordDAO;
-import database.dao.ReaderDAO;
+import database.dao.*;
 import interfaces.Reportable;
 import interfaces.Searchable;
 import models.BookInventoryLog;
 import models.BorrowRecord;
 import models.books.Book;
 import models.enums.BorrowStatus;
+import models.enums.UserRole;
 import models.people.Reader;
+import models.people.User;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -27,6 +26,7 @@ public class LibraryService implements Searchable, Reportable {
     private final BookDAO bookDAO;
     private final ReaderDAO readerDAO;
     private final BorrowRecordDAO borrowRecordDAO;
+    private final UserDAO userDAO;
 
     private final int maxBorrowDays = 14;
     private final double finePerDay = 5000;
@@ -37,6 +37,7 @@ public class LibraryService implements Searchable, Reportable {
         this.bookDAO = new BookDAOImpl();
         this.readerDAO = new ReaderDAOImpl();
         this.borrowRecordDAO = new BorrowRecordDAOImpl();
+        this.userDAO = new UserDAOImpl();
     }
 
     // ========== BOOK MANAGEMENT ==========
@@ -208,11 +209,38 @@ public class LibraryService implements Searchable, Reportable {
         }
     }
 
+    public boolean registerReaderWithAccount(Reader reader, String password) {
+        try {
+            readerDAO.save(reader);
+            String readerId = reader.getId();
+
+            User newUser = new User(reader.getEmail(), password, UserRole.READER, reader.getName(), reader.getEmail());
+            newUser.setLinkedEntityId(readerId);
+
+            userDAO.save(newUser);
+            return true;
+        } catch (SQLException e) {
+            System.err.println(" Lỗi đăng ký hệ thống: " + e.getMessage());
+            return false;
+        }
+    }
+
     public boolean removeReader(String readerId) {
         try {
             Reader reader = readerDAO.findById(readerId);
             if (reader != null && reader.getCurrentBorrows() == 0) {
                 readerDAO.delete(readerId);
+
+                List<User> allUsers = userDAO.findAll(); // Hoặc viết thêm hàm findByLinkedId trong UserDAO
+                for (User u : allUsers) {
+                    if (readerId.equals(u.getLinkedEntityId())) {
+                        u.setActive(false);
+                        userDAO.update(u);
+                        System.out.println("  Đã khóa tài khoản đăng nhập: " + u.getUsername());
+                        break;
+                    }
+                }
+
                 System.out.println(" Đã xóa độc giả: " + reader.getName());
                 return true;
             }
