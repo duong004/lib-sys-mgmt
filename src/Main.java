@@ -764,24 +764,26 @@ public class Main {
 
         String username = getStringInput("Tên đăng nhập: ");
 
-        try {
-            if (userDAO.exists(username)) {
-                System.out.println(" Tên đăng nhập đã tồn tại!");
-                return;
+        String fullName = getStringInput("Họ tên: ");
+        String email = getStringInput("Email: ");
+        String password = getPasswordInput("Mật khẩu: ");
+
+        if (role == UserRole.LIBRARIAN) {
+            String position = getStringInput("Chức vụ (vd: Quản lý kho, Thủ thư chính): ");
+            // Tạo đối tượng Librarian (ID sẽ được Service tự sinh)
+            Librarian lib = new Librarian(null, fullName, email, "0000000000", position);
+
+            if (library.registerLibrarianWithAccount(lib, username, password)) {
+                System.out.println(" Đã tạo thủ thư mới: " + lib.getEmployeeId());
             }
-
-            String password = getPasswordInput("Mật khẩu: ");
-            String fullName = getStringInput("Họ tên: ");
-            String email = getStringInput("Email: ");
-
-            User newUser = new User(username, password, role, fullName, email);
-            userDAO.save(newUser);
-
-            System.out.println("\n Đã tạo tài khoản: " + username);
-            System.out.println("   Vai trò: " + role.getDisplayName());
-
-        } catch (Exception e) {
-            System.err.println(" Lỗi: " + e.getMessage());
+        } else {
+            try {
+                User admin = new User(username, password, UserRole.ADMIN, fullName, email);
+                userDAO.save(admin);
+                System.out.println(" Đã tạo Admin thành công.");
+            } catch (Exception e) {
+                System.err.println(" Lỗi: " + e.getMessage());
+            }
         }
     }
 

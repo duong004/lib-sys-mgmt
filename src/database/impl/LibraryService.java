@@ -9,6 +9,7 @@ import models.BorrowRecord;
 import models.books.Book;
 import models.enums.BorrowStatus;
 import models.enums.UserRole;
+import models.people.Librarian;
 import models.people.Reader;
 import models.people.User;
 
@@ -27,6 +28,7 @@ public class LibraryService implements Searchable, Reportable {
     private final ReaderDAO readerDAO;
     private final BorrowRecordDAO borrowRecordDAO;
     private final UserDAO userDAO;
+    private final LibrarianDAO librarianDAO;
 
     private final int maxBorrowDays = 14;
     private final double finePerDay = 5000;
@@ -38,6 +40,8 @@ public class LibraryService implements Searchable, Reportable {
         this.readerDAO = new ReaderDAOImpl();
         this.borrowRecordDAO = new BorrowRecordDAOImpl();
         this.userDAO = new UserDAOImpl();
+
+        this.librarianDAO = new LibrarianDAOImpl();
     }
 
     // ========== BOOK MANAGEMENT ==========
@@ -274,6 +278,38 @@ public class LibraryService implements Searchable, Reportable {
             }
         } catch (SQLException e) {
             System.err.println(" Lỗi khi hiển thị độc giả: " + e.getMessage());
+        }
+    }
+
+    // ========== LIBRARIAN OPERATIONS ==========
+    public boolean registerLibrarianWithAccount(Librarian lib, String username, String password) {
+        Connection conn = null;
+        try {
+            conn = DatabaseConfig.getConnection();
+            conn.setAutoCommit(false); // Bắt đầu Transaction
+
+            // 1. Sinh ID và lưu Librarian
+            String nextId = librarianDAO.generateNextLibrarianId();
+            lib.setEmployeeId(nextId);
+            librarianDAO.save(lib);
+
+            // 2. Lưu User
+            User newUser = new User(username, password, UserRole.LIBRARIAN, lib.getName(), lib.getEmail());
+            newUser.setLinkedEntityId(lib.getEmployeeId());
+            userDAO.save(newUser);
+
+            conn.commit(); // Thành công hết thì lưu vào DB
+            return true;
+        } catch (SQLException e) {
+            if (conn != null) {
+                try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            }
+            System.err.println(" Lỗi đăng ký thủ thư: " + e.getMessage());
+            return false;
+        } finally {
+            if (conn != null) {
+                try { conn.setAutoCommit(true); conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
         }
     }
 
