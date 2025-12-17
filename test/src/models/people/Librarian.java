@@ -41,4 +41,5 @@ public class Librarian extends Person {
     // Getters
     public String getEmployeeId() { return employeeId; }
     public String getPosition() { return position; }
+    public void setEmployeeId(String id) { this.employeeId = id; }
 }
