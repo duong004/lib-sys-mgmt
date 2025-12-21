@@ -36,7 +36,7 @@ public class LoginView {
     public Scene createScene() {
         // Root container with gradient background
         StackPane root = new StackPane();
-        root.setStyle("-fx-background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);");
+        root.setStyle("-fx-background-color: linear-gradient(to bottom right, #667eea, #764ba2);");
 
         // Add animated background circles
         root.getChildren().add(createAnimatedBackground());
@@ -318,21 +318,40 @@ public class LoginView {
     }
 
     private void navigateToDashboard(User user) {
-        // TODO: Navigate based on role
         System.out.println("Login successful: " + user.getUsername() + " (" + user.getRole() + ")");
 
-        // For now, show alert
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Đăng nhập thành công");
-        alert.setHeaderText("Chào mừng, " + user.getFullName());
-        alert.setContentText("Role: " + user.getRole().getDisplayName());
-        alert.showAndWait();
+        // Load appropriate dashboard based on role
+        javafx.scene.Scene dashboardScene = null;
 
-        // TODO: Load appropriate dashboard based on role
-        // switch (user.getRole()) {
-        //     case ADMIN: loadAdminDashboard(user); break;
-        //     case LIBRARIAN: loadLibrarianDashboard(user); break;
-        //     case READER: loadReaderDashboard(user); break;
-        // }
+        switch (user.getRole()) {
+            case ADMIN:
+                // TODO: Create AdminDashboard
+                showAlert("Admin Dashboard", "Admin dashboard coming soon!");
+                return;
+
+            case LIBRARIAN:
+                views.librarian.LibrarianDashboard librarianDashboard =
+                        new views.librarian.LibrarianDashboard(stage, user);
+                dashboardScene = librarianDashboard.createScene();
+                break;
+
+            case READER:
+                // TODO: Create ReaderDashboard
+                showAlert("Reader Dashboard", "Reader dashboard coming soon!");
+                return;
+        }
+
+        if (dashboardScene != null) {
+            stage.setScene(dashboardScene);
+            stage.setMaximized(true);
+        }
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
