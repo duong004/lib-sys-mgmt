@@ -51,7 +51,7 @@
 
 /* Login Button */
 .login-button {
-    -fx-background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -fx-background-color: linear-gradient(to bottom right, #667eea 0%, #764ba2 100%);
     -fx-text-fill: white;
     -fx-font-size: 15px;
     -fx-font-weight: bold;
@@ -63,7 +63,7 @@
 }
 
 .login-button:hover {
-    -fx-background-color: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    -fx-background-color: linear-gradient(to bottom right, #764ba2 0%, #667eea 100%);
     -fx-scale-y: 1.03;
     -fx-scale-x: 1.03;
 }

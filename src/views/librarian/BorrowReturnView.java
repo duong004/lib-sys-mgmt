@@ -12,7 +12,7 @@ import javafx.scene.layout.VBox;
 import models.BorrowRecord;
 import models.people.User;
 
-class BorrowReturnView {
+public class BorrowReturnView {
 
     private LibraryService libraryService;
     private User currentUser;
@@ -196,78 +196,5 @@ class BorrowReturnView {
         alert.setTitle("Lỗi");
         alert.setContentText(message);
         alert.showAndWait();
-    }
-}
-
-/**
- * Reports View - Statistics and reports
- */
-class ReportsView {
-
-    private LibraryService libraryService;
-
-    public ReportsView(LibraryService libraryService) {
-        this.libraryService = libraryService;
-    }
-
-    public VBox createView() {
-        VBox view = new VBox(20);
-
-        // Report buttons
-        HBox buttonsRow = new HBox(15);
-        buttonsRow.setAlignment(Pos.CENTER_LEFT);
-
-        Button popularBooksBtn = new Button("📊 Top sách được mượn");
-        popularBooksBtn.getStyleClass().add("primary-button");
-        popularBooksBtn.setOnAction(e -> showPopularBooks());
-
-        Button activeReadersBtn = new Button("👑 Top độc giả tích cực");
-        activeReadersBtn.getStyleClass().add("primary-button");
-        activeReadersBtn.setOnAction(e -> showActiveReaders());
-
-        Button overdueBtn = new Button("⚠️ Sách quá hạn");
-        overdueBtn.getStyleClass().add("danger-button");
-        overdueBtn.setOnAction(e -> showOverdueBooks());
-
-        Button statsBtn = new Button("📈 Thống kê tháng");
-        statsBtn.getStyleClass().add("secondary-button");
-        statsBtn.setOnAction(e -> showMonthlyStats());
-
-        buttonsRow.getChildren().addAll(popularBooksBtn, activeReadersBtn, overdueBtn, statsBtn);
-
-        // Report display area
-        TextArea reportArea = new TextArea();
-        reportArea.setEditable(false);
-        reportArea.setPrefHeight(500);
-        reportArea.setStyle(
-                "-fx-font-family: 'Consolas', 'Monaco', monospace; " +
-                        "-fx-font-size: 13px; " +
-                        "-fx-background-color: #1e293b; " +
-                        "-fx-text-fill: #e2e8f0;"
-        );
-        VBox.setVgrow(reportArea, Priority.ALWAYS);
-
-        view.getChildren().addAll(buttonsRow, reportArea);
-
-        // Initial report
-        reportArea.setText("Chọn một loại báo cáo bên trên để xem...");
-
-        return view;
-    }
-
-    private void showPopularBooks() {
-        libraryService.generatePopularBooksReport();
-    }
-
-    private void showActiveReaders() {
-        libraryService.generateActiveReadersReport();
-    }
-
-    private void showOverdueBooks() {
-        libraryService.generateOverdueReport();
-    }
-
-    private void showMonthlyStats() {
-        libraryService.generateMonthlyStatistics();
     }
 }

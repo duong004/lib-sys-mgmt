@@ -118,7 +118,7 @@ class DashboardOverview {
                 "📚",
                 String.valueOf(libraryService.getBooks().size()),
                 "Tổng số sách",
-                "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                "linear-gradient(to bottom right, #667eea 0%, #764ba2 100%)"
         );
 
         // Total Readers
@@ -126,7 +126,7 @@ class DashboardOverview {
                 "👥",
                 String.valueOf(libraryService.getReaders().size()),
                 "Độc giả",
-                "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+                "linear-gradient(to bottom right, #f093fb 0%, #f5576c 100%)"
         );
 
         // Currently Borrowed
@@ -137,15 +137,15 @@ class DashboardOverview {
                 "📖",
                 String.valueOf(borrowed),
                 "Đang mượn",
-                "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+                "linear-gradient(to bottom right, #4facfe 0%, #00f2fe 100%)"
         );
 
         // Overdue
         VBox overdueCard = createStatCard(
-                "⚠️",
+                "⚠",
                 String.valueOf(libraryService.getOverdueRecords().size()),
                 "Quá hạn",
-                "linear-gradient(135deg, #fa709a 0%, #fee140 100%)"
+                "linear-gradient(to bottom right, #fa709a 0%, #fee140 100%)"
         );
 
         row.getChildren().addAll(bookCard, readerCard, borrowCard, overdueCard);

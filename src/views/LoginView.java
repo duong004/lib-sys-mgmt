@@ -325,9 +325,10 @@ public class LoginView {
 
         switch (user.getRole()) {
             case ADMIN:
-                // TODO: Create AdminDashboard
-                showAlert("Admin Dashboard", "Admin dashboard coming soon!");
-                return;
+                views.admin.AdminDashboard adminDashboard =
+                        new views.admin.AdminDashboard(stage, user);
+                dashboardScene = adminDashboard.createScene();
+                break;
 
             case LIBRARIAN:
                 views.librarian.LibrarianDashboard librarianDashboard =
