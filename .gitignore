@@ -189,6 +189,9 @@ yarn.lock
 # Database config with password
 src/database/config/config.properties
 
+# Test directory
+test/
+
 # ==================== KEEP THESE ====================
 
 # Keep empty directories with .gitkeep
