@@ -120,4 +120,3 @@ project/
 *   Đại học Bách Khoa Hà Nội (HUST)
 
 ---
-*Cảm ơn bạn đã quan tâm đến dự án của chúng tôi!*
