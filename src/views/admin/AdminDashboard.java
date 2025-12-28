@@ -7,7 +7,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -15,10 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import models.people.User;
 import views.BaseDashboard;
-import views.librarian.BookManagementView;
-import views.librarian.BorrowReturnView;
-import views.librarian.ReaderManagementView;
-import views.librarian.ReportsView;
+import views.librarian.*;
 
 public class AdminDashboard extends BaseDashboard {
 
@@ -41,11 +41,14 @@ public class AdminDashboard extends BaseDashboard {
 
         // User Management (ADMIN ONLY)
         Button usersBtn = createMenuButton("👤", "Quản lý Người dùng", () -> loadUserManagementView());
+        Button inventoryLogBtn = createMenuButton("📝", "Lịch sử nhập xuất", () -> loadInventoryLogView());
 
         // Separator
         Separator sep = new Separator();
         sep.setMaxWidth(200);
-        sep.setStyle("-fx-background-color: rgba(255, 255, 255, 0.2);");
+        //sep.setStyle("-fx-background-color: rgba(255, 255, 255, 0.2);");
+        VBox.setMargin(sep, new Insets(5, 0, 5, 0));
+        sep.setStyle("-fx-opacity: 0.3; -fx-background-color: white;");
 
         // All librarian features
         Button booksBtn = createMenuButton("📚", "Quản lý Sách", () -> loadBookManagementView());
@@ -56,6 +59,7 @@ public class AdminDashboard extends BaseDashboard {
         menu.getChildren().addAll(
                 dashboardBtn,
                 usersBtn,
+                inventoryLogBtn,
                 sep,
                 booksBtn,
                 readersBtn,
@@ -100,11 +104,15 @@ public class AdminDashboard extends BaseDashboard {
         ReportsView reportsView = new ReportsView(libraryService);
         loadView(reportsView.createView(), "📈 Báo cáo & Thống kê");
     }
+
+    private void loadInventoryLogView() {
+        BookInventoryLogView logView = new BookInventoryLogView();
+        loadView(logView.createView(), "📝 Lịch sử Nhập xuất Sách");
+    }
 }
 
-/**
- * Admin Overview - System-wide statistics
- */
+
+// Admin Overview - System-wide statistics
 class AdminOverview {
 
     private LibraryService libraryService;

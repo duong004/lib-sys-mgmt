@@ -54,27 +54,54 @@ public abstract class BaseDashboard {
         return scene;
     }
 
+//    private VBox createSidebar() {
+//        VBox sidebar = new VBox();
+//        sidebar.setPrefWidth(280);
+//        sidebar.setStyle("-fx-background-color: " + SIDEBAR_BG + ";");
+//        sidebar.setAlignment(Pos.TOP_CENTER);
+//        sidebar.setPadding(new Insets(0));
+//
+//        // Header with user info
+//        VBox header = createSidebarHeader();
+//
+//        // Navigation menu
+//        VBox menu = createNavigationMenu();
+//
+//        // Spacer
+//        Region spacer = new Region();
+//        VBox.setVgrow(spacer, Priority.ALWAYS);
+//
+//        // Footer with logout
+//        VBox footer = createSidebarFooter();
+//
+//        sidebar.getChildren().addAll(header, menu, spacer, footer);
+//
+//        return sidebar;
+//    }
+
     private VBox createSidebar() {
         VBox sidebar = new VBox();
         sidebar.setPrefWidth(280);
         sidebar.setStyle("-fx-background-color: " + SIDEBAR_BG + ";");
         sidebar.setAlignment(Pos.TOP_CENTER);
-        sidebar.setPadding(new Insets(0));
 
-        // Header with user info
         VBox header = createSidebarHeader();
-
-        // Navigation menu
         VBox menu = createNavigationMenu();
 
-        // Spacer
-        Region spacer = new Region();
-        VBox.setVgrow(spacer, Priority.ALWAYS);
+        // Đưa menu vào ScrollPane để nếu nút bấm quá nhiều sẽ có thanh cuộn
+        ScrollPane scrollPane = new ScrollPane(menu);
+        scrollPane.getStyleClass().add("sidebar-scroll");
+        scrollPane.setFitToWidth(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        // Footer with logout
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent; -fx-border-width: 0;");
+
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
+
         VBox footer = createSidebarFooter();
 
-        sidebar.getChildren().addAll(header, menu, spacer, footer);
+        sidebar.getChildren().addAll(header, scrollPane, footer);
 
         return sidebar;
     }

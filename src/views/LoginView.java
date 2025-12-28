@@ -18,9 +18,11 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import models.people.User;
+import views.admin.AdminDashboard;
+import views.librarian.LibrarianDashboard;
+import views.reader.ReaderDashboard;
 
 public class LoginView {
-
     private Stage stage;
     private UserDAO userDAO;
     private TextField usernameField;
@@ -61,7 +63,7 @@ public class LoginView {
         for (int i = 0; i < 6; i++) {
             Circle circle = new Circle();
             circle.setRadius(80 + Math.random() * 120);
-            circle.setFill(Color.rgb(255, 255, 255, 0.05 + Math.random() * 0.1));
+            circle.setFill(Color.rgb(255, 255, 255, 0.05 /*+ Math.random() * 0.1*/));
             circle.setEffect(new GaussianBlur(20));
 
             // Random position
@@ -123,7 +125,7 @@ public class LoginView {
         loginButton.setOnAction(e -> handleLogin());
 
         // Footer text
-        Label footerLabel = new Label("Developed by Group ");
+        Label footerLabel = new Label("Developed by Group 23");
         footerLabel.getStyleClass().add("footer-label");
 
         card.getChildren().addAll(
@@ -318,28 +320,24 @@ public class LoginView {
     }
 
     private void navigateToDashboard(User user) {
-        System.out.println("Login successful: " + user.getUsername() + " (" + user.getRole() + ")");
-
-        // Load appropriate dashboard based on role
-        javafx.scene.Scene dashboardScene = null;
+        Scene dashboardScene = null;
 
         switch (user.getRole()) {
             case ADMIN:
-                views.admin.AdminDashboard adminDashboard =
-                        new views.admin.AdminDashboard(stage, user);
+                AdminDashboard adminDashboard = new AdminDashboard(stage, user);
                 dashboardScene = adminDashboard.createScene();
                 break;
 
             case LIBRARIAN:
-                views.librarian.LibrarianDashboard librarianDashboard =
-                        new views.librarian.LibrarianDashboard(stage, user);
+                LibrarianDashboard librarianDashboard = new LibrarianDashboard(stage, user);
                 dashboardScene = librarianDashboard.createScene();
                 break;
 
             case READER:
-                // TODO: Create ReaderDashboard
-                showAlert("Reader Dashboard", "Reader dashboard coming soon!");
-                return;
+                // NEW: Điều hướng đến ReaderDashboard
+                ReaderDashboard readerDashboard = new ReaderDashboard(stage, user);
+                dashboardScene = readerDashboard.createScene();
+                break;
         }
 
         if (dashboardScene != null) {

@@ -38,12 +38,16 @@ public class LibrarianDashboard extends BaseDashboard {
         // Reports
         Button reportsBtn = createMenuButton("📈", "Báo cáo", () -> loadReportsView());
 
+        // Inventory Logs
+//        Button inventoryLogBtn = createMenuButton("📝", "Lịch sử nhập xuất", () -> loadInventoryLogView());
+
         menu.getChildren().addAll(
                 dashboardBtn,
                 booksBtn,
                 readersBtn,
                 borrowBtn,
                 reportsBtn
+//                ,inventoryLogBtn
         );
 
         return menu;
@@ -78,11 +82,15 @@ public class LibrarianDashboard extends BaseDashboard {
         ReportsView reportsView = new ReportsView(libraryService);
         loadView(reportsView.createView(), "📈 Báo cáo & Thống kê");
     }
+
+    private void loadInventoryLogView() {
+        BookInventoryLogView logView = new BookInventoryLogView();
+        loadView(logView.createView(), "📝 Lịch sử Nhập xuất Sách");
+    }
 }
 
-/**
- * Dashboard Overview - Stats and quick actions
- */
+
+// Dashboard Overview - Stats and quick actions
 class DashboardOverview {
 
     private LibraryService libraryService;
