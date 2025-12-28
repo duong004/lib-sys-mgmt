@@ -76,7 +76,7 @@ project/
 
 ### 2. Chuẩn bị Cơ sở dữ liệu
 *   Cài đặt PostgreSQL và tạo một database mới tên là `library_db`.
-*   Chạy các script SQL (trong thư mục `docs/sql`) hoặc tạo các bảng theo cấu trúc:
+*   Chạy các script SQL (trong thư mục `docs/sql`) hoặc tạo các bảng theo cấu trúc:   
    *   `users`, `readers`, `librarians`, `books`, `borrow_records`, `book_inventory_logs`.
 
 ### 3. Cấu hình kết nối
