@@ -326,11 +326,51 @@ public class BookInventoryLogView {
     }
 
     private void exportLogs() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Xuất báo cáo");
-        alert.setHeaderText("Tính năng đang phát triển");
-        alert.setContentText("Chức năng xuất báo cáo Excel/PDF sẽ được bổ sung trong phiên bản sau.");
-        alert.showAndWait();
+//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//        alert.setTitle("Xuất báo cáo");
+//        alert.setHeaderText("Tính năng đang phát triển");
+//        alert.setContentText("Chức năng xuất báo cáo Excel/PDF sẽ được bổ sung trong phiên bản sau.");
+//        alert.showAndWait();
+        // Simple text export
+        try {
+            StringBuilder report = new StringBuilder();
+            report.append("╔══════════════════════════════════════════════════╗\n");
+            report.append("║          BÁO CÁO LỊCH SỬ NHẬP XUẤT SÁCH          ║\n");
+            report.append("╚══════════════════════════════════════════════════╝\n\n");
+            report.append("Thời gian tạo báo cáo: ").append(java.time.LocalDateTime.now()).append("\n");
+            report.append("Tổng số giao dịch: ").append(logData.size()).append("\n\n");
+            report.append("═══════════════════════════════════════════════════════\n\n");
+
+            for (BookInventoryLog log : logData) {
+                report.append("ID: ").append(log.getLogId()).append("\n");
+                report.append("Thời gian: ").append(log.getTimestamp()).append("\n");
+                report.append("ISBN: ").append(log.getIsbn()).append("\n");
+                report.append("Loại: ").append(log.getActionType()).append("\n");
+                report.append("Thay đổi: ").append(log.getQuantityChange()).append("\n");
+                report.append("Tổng sau: ").append(log.getTotalCopiesAfter()).append("\n");
+                report.append("Người thực hiện: ").append(log.getPerformedBy()).append("\n");
+                report.append("Ghi chú: ").append(log.getNotes()).append("\n");
+                report.append("-----------------------------------------------------------\n");
+            }
+
+            // Show in dialog
+            TextArea textArea = new TextArea(report.toString());
+            textArea.setEditable(false);
+            textArea.setWrapText(true);
+            textArea.setPrefWidth(800);
+            textArea.setPrefHeight(600);
+            textArea.setStyle("-fx-font-family: 'Consolas', 'Monaco', monospace; -fx-font-size: 12px;");
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Báo cáo Nhập xuất Sách");
+            alert.setHeaderText("Xem và sao chép báo cáo");
+            alert.getDialogPane().setContent(textArea);
+            alert.getDialogPane().setPrefWidth(850);
+            alert.showAndWait();
+
+        } catch (Exception e) {
+            showError("Lỗi tạo báo cáo: " + e.getMessage());
+        }
     }
 
     private void showError(String message) {

@@ -59,31 +59,31 @@ public class LibrarianDashboard extends BaseDashboard {
     }
 
     private void loadDashboardView() {
-        DashboardOverview overview = new DashboardOverview(libraryService);
+        DashboardOverview overview = new DashboardOverview(libraryService, this);
         loadView(overview.createView(), "📊 Tổng quan");
     }
 
-    private void loadBookManagementView() {
+    public void loadBookManagementView() {
         BookManagementView bookView = new BookManagementView(libraryService, currentUser);
         loadView(bookView.createView(), "📚 Quản lý Sách");
     }
 
-    private void loadReaderManagementView() {
+    public void loadReaderManagementView() {
         ReaderManagementView readerView = new ReaderManagementView(libraryService, currentUser);
         loadView(readerView.createView(), "👥 Quản lý Độc giả");
     }
 
-    private void loadBorrowReturnView() {
+    public void loadBorrowReturnView() {
         BorrowReturnView borrowView = new BorrowReturnView(libraryService, currentUser);
         loadView(borrowView.createView(), "🔄 Mượn/Trả sách");
     }
 
-    private void loadReportsView() {
+    public void loadReportsView() {
         ReportsView reportsView = new ReportsView(libraryService);
         loadView(reportsView.createView(), "📈 Báo cáo & Thống kê");
     }
 
-    private void loadInventoryLogView() {
+    public void loadInventoryLogView() {
         BookInventoryLogView logView = new BookInventoryLogView();
         loadView(logView.createView(), "📝 Lịch sử Nhập xuất Sách");
     }
@@ -94,9 +94,11 @@ public class LibrarianDashboard extends BaseDashboard {
 class DashboardOverview {
 
     private LibraryService libraryService;
+    private LibrarianDashboard parentDashboard;
 
-    public DashboardOverview(LibraryService libraryService) {
+    public DashboardOverview(LibraryService libraryService, LibrarianDashboard parentDashboard) {
         this.libraryService = libraryService;
+        this.parentDashboard = parentDashboard;
     }
 
     public VBox createView() {
@@ -209,15 +211,35 @@ class DashboardOverview {
 
         Button addBookBtn = new Button("➕ Thêm sách");
         addBookBtn.getStyleClass().add("primary-button");
+        addBookBtn.setOnAction(e -> {
+            if (parentDashboard != null) {
+                parentDashboard.loadBookManagementView();
+            }
+        });
 
         Button registerReaderBtn = new Button("👤 Đăng ký độc giả");
         registerReaderBtn.getStyleClass().add("primary-button");
+        registerReaderBtn.setOnAction(e -> {
+            if (parentDashboard != null) {
+                parentDashboard.loadReaderManagementView();
+            }
+        });
 
         Button borrowBtn = new Button("📤 Mượn sách");
         borrowBtn.getStyleClass().add("secondary-button");
+        borrowBtn.setOnAction(e -> {
+            if (parentDashboard != null) {
+                parentDashboard.loadBorrowReturnView();
+            }
+        });
 
         Button returnBtn = new Button("📥 Trả sách");
         returnBtn.getStyleClass().add("secondary-button");
+        returnBtn.setOnAction(e -> {
+            if (parentDashboard != null) {
+                parentDashboard.loadBorrowReturnView();
+            }
+        });
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);

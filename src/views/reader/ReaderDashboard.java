@@ -72,26 +72,26 @@ public class ReaderDashboard extends BaseDashboard {
     }
 
     private void loadDashboardView() {
-        ReaderOverview overview = new ReaderOverview(libraryService, currentReader);
+        ReaderOverview overview = new ReaderOverview(libraryService, currentReader, this);
         loadView(overview.createView(), "📊 Tổng quan");
     }
 
-    private void loadSearchView() {
+    public void loadSearchView() {
         BookSearchView searchView = new BookSearchView(libraryService);
         loadView(searchView.createView(), "🔍 Tìm kiếm sách");
     }
 
-    private void loadMyBooksView() {
+    public void loadMyBooksView() {
         MyBorrowedBooksView myBooksView = new MyBorrowedBooksView(libraryService, currentReader);
         loadView(myBooksView.createView(), "📚 Sách đang mượn");
     }
 
-    private void loadHistoryView() {
+    public void loadHistoryView() {
         BorrowHistoryView historyView = new BorrowHistoryView(libraryService, currentReader);
         loadView(historyView.createView(), "📖 Lịch sử mượn");
     }
 
-    private void loadProfileView() {
+    public void loadProfileView() {
         ReaderProfileView profileView = new ReaderProfileView(libraryService, currentReader);
         loadView(profileView.createView(), "👤 Thông tin cá nhân");
     }
@@ -101,10 +101,12 @@ public class ReaderDashboard extends BaseDashboard {
 class ReaderOverview {
     private LibraryService libraryService;
     private Reader currentReader;
+    private ReaderDashboard parentDashboard;
 
-    public ReaderOverview(LibraryService libraryService, Reader currentReader) {
+    public ReaderOverview(LibraryService libraryService, Reader currentReader, ReaderDashboard parentDashboard) {
         this.libraryService = libraryService;
         this.currentReader = currentReader;
+        this.parentDashboard = parentDashboard;
     }
 
     public VBox createView() {
@@ -160,7 +162,7 @@ class ReaderOverview {
 
         // Overdue
         VBox overdueCard = createStatCard(
-                "⚠️",
+                "⚠",
                 String.valueOf(overdue),
                 "Quá hạn",
                 overdue > 0 ?
@@ -232,12 +234,27 @@ class ReaderOverview {
 
         Button searchBtn = new Button("🔍 Tìm sách");
         searchBtn.getStyleClass().add("primary-button");
+        searchBtn.setOnAction(e -> {
+            if (parentDashboard != null) {
+                parentDashboard.loadSearchView();
+            }
+        });
 
         Button myBooksBtn = new Button("📚 Sách đang mượn");
         myBooksBtn.getStyleClass().add("secondary-button");
+        myBooksBtn.setOnAction(e -> {
+            if (parentDashboard != null) {
+                parentDashboard.loadMyBooksView();
+            }
+        });
 
         Button historyBtn = new Button("📖 Lịch sử");
         historyBtn.getStyleClass().add("secondary-button");
+        historyBtn.setOnAction(e -> {
+            if (parentDashboard != null) {
+                parentDashboard.loadHistoryView();
+            }
+        });
 
         buttonsRow.getChildren().addAll(searchBtn, myBooksBtn, historyBtn);
 
@@ -278,11 +295,40 @@ class ReaderOverview {
             activities.add("Chưa có hoạt động nào");
         }
 
+        activityList.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                int selectedIndex = activityList.getSelectionModel().getSelectedIndex();
+                if (selectedIndex >= 0 && selectedIndex < recentRecords.size()) {
+                    BorrowRecord selectedRecord = recentRecords.get(selectedIndex);
+                    showRecordDetails(selectedRecord);
+                }
+            }
+        });
+
+        activityList.setItems(activities);
+
         activityList.setItems(activities);
 
         card.getChildren().addAll(title, activityList);
 
         return card;
+    }
+
+    private void showRecordDetails(BorrowRecord record) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Chi tiết phiếu mượn");
+        alert.setHeaderText(record.getBook().getTitle());
+        alert.setContentText(
+                "Mã phiếu: " + record.getRecordId() + "\n" +
+                        "ISBN: " + record.getBook().getISBN() + "\n" +
+                        "Tác giả: " + record.getBook().getAuthor() + "\n" +
+                        "Ngày mượn: " + record.getBorrowDate() + "\n" +
+                        "Hạn trả: " + record.getDueDate() + "\n" +
+                        "Ngày trả: " + (record.getReturnDate() != null ? record.getReturnDate() : "Chưa trả") + "\n" +
+                        "Trạng thái: " + record.getStatus().getDescription() + "\n" +
+                        "Đã gia hạn: " + record.getRenewalCount() + " lần"
+        );
+        alert.showAndWait();
     }
 }
 

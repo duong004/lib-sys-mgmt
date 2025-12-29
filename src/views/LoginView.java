@@ -280,7 +280,7 @@ public class LoginView {
     }
 
     private void showError(String message) {
-        errorLabel.setText("⚠️ " + message);
+        errorLabel.setText("⚠ " + message); //⚠️
         errorLabel.setVisible(true);
         errorLabel.setManaged(true);
 

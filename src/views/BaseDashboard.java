@@ -211,7 +211,7 @@ public abstract class BaseDashboard {
         logoutBtn.setMaxWidth(Double.MAX_VALUE);
         logoutBtn.setOnAction(e -> handleLogout());
 
-        Label version = new Label("v1.0.0");
+        Label version = new Label("v1.3.0");
         version.setStyle("-fx-text-fill: #64748b; -fx-font-size: 11px;");
 
         footer.getChildren().addAll(logoutBtn, version);

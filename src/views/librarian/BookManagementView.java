@@ -73,7 +73,7 @@ public class BookManagementView {
         addBtn.getStyleClass().add("primary-button");
         addBtn.setOnAction(e -> showAddBookDialog());
 
-        Button deleteBtn = new Button("🗑️ Xóa");
+        Button deleteBtn = new Button("🗑 Xóa");
         deleteBtn.getStyleClass().add("danger-button");
         deleteBtn.setOnAction(e -> deleteSelectedBook());
 

@@ -258,16 +258,35 @@ public class UserManagementView {
         PasswordField passwordField = new PasswordField();
         TextField nameField = new TextField();
         TextField emailField = new TextField();
+        TextField positionField = new TextField();
+        positionField.setPromptText("Vd: Thủ thư trưởng, Quản lý kho...");
+        positionField.setText("Thủ thư");
+
+        Label positionLabel = new Label("Chức vụ:");
+
+        // Show/hide position based on role
+        positionLabel.setVisible(roleCombo.getValue() == UserRole.LIBRARIAN);
+        positionField.setVisible(roleCombo.getValue() == UserRole.LIBRARIAN);
+        positionField.setManaged(roleCombo.getValue() == UserRole.LIBRARIAN);
+
+        roleCombo.setOnAction(e -> {
+            boolean isLibrarian = roleCombo.getValue() == UserRole.LIBRARIAN;
+            positionLabel.setVisible(isLibrarian);
+            positionField.setVisible(isLibrarian);
+            positionField.setManaged(isLibrarian);
+        });
 
         form.getChildren().addAll(
                 new Label("Vai trò:"), roleCombo,
                 new Label("Username:"), usernameField,
                 new Label("Mật khẩu:"), passwordField,
                 new Label("Họ tên:"), nameField,
-                new Label("Email:"), emailField
+                new Label("Email:"), emailField,
+                positionLabel, positionField
         );
 
-        form.setUserData(new Object[]{roleCombo, usernameField, passwordField, nameField, emailField});
+        // Store all fields including position
+        form.setUserData(new Object[]{roleCombo, usernameField, passwordField, nameField, emailField, positionField});
 
         return form;
     }
@@ -310,6 +329,7 @@ public class UserManagementView {
         String password = ((PasswordField) fields[2]).getText();
         String name = ((TextField) fields[3]).getText().trim();
         String email = ((TextField) fields[4]).getText().trim();
+        String position = ((TextField) fields[5]).getText().trim();  // NEW
 
         if (username.isEmpty() || password.isEmpty() || name.isEmpty() || email.isEmpty()) {
             showError("Vui lòng điền đầy đủ thông tin!");
@@ -317,12 +337,46 @@ public class UserManagementView {
         }
 
         try {
-            User newUser = new User(username, password, role, name, email);
-            userDAO.save(newUser);
-            refreshTable();
-            showSuccess("Đã tạo tài khoản: " + username);
+            if (role == UserRole.LIBRARIAN) {
+                // Validate position for Librarian
+                if (position.isEmpty()) {
+                    position = "Thủ thư";
+                }
+
+                // Tạo Librarian object
+                Librarian librarian = new Librarian(null, name, email, "0000000000", position);
+
+                // Sử dụng LibraryService để tạo đồng bộ (Librarian + User)
+                if (libraryService.registerLibrarianWithAccount(librarian, username, password)) {
+                    refreshTable();
+
+                    Alert success = new Alert(Alert.AlertType.INFORMATION);
+                    success.setTitle("Tạo tài khoản thành công");
+                    success.setHeaderText("Thông tin Librarian");
+                    success.setContentText(
+                            "✅ Đã tạo tài khoản và hồ sơ thủ thư\n\n" +
+                                    "Mã thủ thư: " + librarian.getEmployeeId() + "\n" +
+                                    "Username: " + username + "\n" +
+                                    "Họ tên: " + name + "\n" +
+                                    "Chức vụ: " + position + "\n\n" +
+                                    "Vui lòng lưu lại thông tin này!"
+                    );
+                    success.showAndWait();
+                } else {
+                    showError("Tạo tài khoản Librarian thất bại!");
+                }
+
+            } else if (role == UserRole.ADMIN) {
+                // Admin chỉ tạo User account, không cần entity
+                User newUser = new User(username, password, UserRole.ADMIN, name, email);
+                userDAO.save(newUser);
+                refreshTable();
+                showSuccess("Đã tạo tài khoản Admin: " + username);
+            }
+
         } catch (Exception e) {
             showError("Lỗi: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
